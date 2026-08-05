@@ -1,0 +1,6 @@
+.venv/
+*.zip
+*.rar
+__pycache__/
+*.pyc
+citrus_disease_model.h5
