@@ -14,14 +14,20 @@ from PIL import Image
 MODEL_PATH = "citrus_disease_model.keras"
 FILE_ID = "1xbs3vuWIc97-pqwpYkRqUx23Ehf0xlcd"
 
-
-def ensure_model() -> None:
+def ensure_model():
     if os.path.exists(MODEL_PATH):
         return
+
     if gdown is None:
-        raise ImportError("gdown is required to download the model. Install it with: pip install gdown")
-    url = f"https://drive.google.com/file/d/1xbs3vuWIc97-pqwpYkRqUx23Ehf0xlcd/view?usp=sharing"
-    gdown.download(url, MODEL_PATH, quiet=False)
+        raise ImportError(
+            "gdown is required. Install it using: pip install gdown"
+        )
+
+    gdown.download(
+        id=FILE_ID,
+        output=MODEL_PATH,
+        quiet=False
+    )
 
 
 ensure_model()
