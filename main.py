@@ -20,7 +20,7 @@ def ensure_model() -> None:
         return
     if gdown is None:
         raise ImportError("gdown is required to download the model. Install it with: pip install gdown")
-    url = f"https://drive.google.com/uc?id={FILE_ID}"
+    url = f"https://drive.google.com/file/d/1q9c3jQm9lt5Dh0N4l3XPJjuujpY8dhe4/view?usp=sharing"
     gdown.download(url, MODEL_PATH, quiet=False)
 
 
