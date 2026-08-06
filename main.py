@@ -11,8 +11,8 @@ import tensorflow as tf
 import keras
 from PIL import Image
 
-MODEL_PATH = "citrus_disease_model.h5"
-FILE_ID = "1q9c3jQm9lt5Dh0N4l3XPJjuujpY8dhe4"
+MODEL_PATH = "citrus_disease_model.keras"
+FILE_ID = "1xbs3vuWIc97-pqwpYkRqUx23Ehf0xlcd"
 
 
 def ensure_model() -> None:
@@ -20,7 +20,7 @@ def ensure_model() -> None:
         return
     if gdown is None:
         raise ImportError("gdown is required to download the model. Install it with: pip install gdown")
-    url = f"https://drive.google.com/file/d/1q9c3jQm9lt5Dh0N4l3XPJjuujpY8dhe4/view?usp=sharing"
+    url = f"https://drive.google.com/file/d/1xbs3vuWIc97-pqwpYkRqUx23Ehf0xlcd/view?usp=sharing"
     gdown.download(url, MODEL_PATH, quiet=False)
 
 
