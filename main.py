@@ -1,7 +1,11 @@
 import json
 import os
 
-import gdown
+try:
+    import gdown  # type: ignore
+except ImportError:  # pragma: no cover - handled at runtime
+    gdown = None
+
 import streamlit as st
 import tensorflow as tf
 import keras
@@ -14,6 +18,8 @@ FILE_ID = "1q9c3jQm9lt5Dh0N4l3XPJjuujpY8dhe4"
 def ensure_model() -> None:
     if os.path.exists(MODEL_PATH):
         return
+    if gdown is None:
+        raise ImportError("gdown is required to download the model. Install it with: pip install gdown")
     url = f"https://drive.google.com/uc?id={FILE_ID}"
     gdown.download(url, MODEL_PATH, quiet=False)
 
