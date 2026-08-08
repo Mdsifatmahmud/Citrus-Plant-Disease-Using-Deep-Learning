@@ -7,3 +7,4 @@ opencv-python-headless
 Pillow
 scikit-learn
 matplotlib
+gdown
