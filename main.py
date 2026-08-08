@@ -1,13 +1,16 @@
 import json
 import os
 
+# Disable GPU/CUDA for Render CPU deployment
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 import streamlit as st
 import tensorflow as tf
 import keras
 from PIL import Image
 
 try:
-    import gdown  # type: ignore
+    import gdown
 except ImportError:
     gdown = None
 
@@ -36,7 +39,7 @@ FILE_ID = "1xbs3vuWIc97-pqwpYkRqUx23Ehf0xlcd"
 # ============================================================
 
 def ensure_model():
-    """Download the model from Google Drive if it doesn't exist."""
+    """Download the model from Google Drive if it does not exist."""
 
     if os.path.exists(MODEL_PATH):
         return
@@ -47,6 +50,7 @@ def ensure_model():
         )
 
     with st.spinner("Downloading AI model for the first time..."):
+
         downloaded_file = gdown.download(
             id=FILE_ID,
             output=MODEL_PATH,
@@ -69,10 +73,12 @@ def load_model():
 
     ensure_model()
 
-    return keras.models.load_model(
+    model = keras.models.load_model(
         MODEL_PATH,
         compile=False
     )
+
+    return model
 
 
 # ============================================================
@@ -88,6 +94,7 @@ with open("class_indices.json", "r") as f:
 # ============================================================
 
 disease_info = {
+
     "Anthracnose": (
         "Fungal disease causing dark lesions on leaves.",
         "Apply fungicide and prune infected leaves.",
@@ -154,28 +161,41 @@ def predict(image):
     # Load model only when prediction is requested
     model = load_model()
 
+    # Convert image to RGB
     image = image.convert("RGB")
+
+    # Resize to model input size
     image = image.resize((224, 224))
 
+    # Convert image to array
     img = tf.keras.utils.img_to_array(image)
+
+    # Add batch dimension
     img = tf.expand_dims(img, 0)
+
+    # Normalize pixel values
     img = img / 255.0
 
+    # Make prediction
     prediction = model.predict(
         img,
         verbose=0
     )
 
+    # Get predicted class
     predicted_index = int(
         tf.argmax(prediction, axis=1)[0]
     )
 
+    # Get confidence
     confidence = float(
         tf.reduce_max(prediction)
     ) * 100
 
+    # Get disease name
     disease = class_indices[str(predicted_index)]
 
+    # Get disease information
     description, treatment, prevention = disease_info.get(
         disease,
         (
@@ -195,7 +215,7 @@ def predict(image):
 
 
 # ============================================================
-# UI
+# User Interface
 # ============================================================
 
 st.title("🍊 Citrus Plant Disease Detection")
@@ -204,6 +224,11 @@ st.write(
     "Upload a citrus leaf image and detect plant diseases "
     "using Deep Learning."
 )
+
+
+# ============================================================
+# File Upload
+# ============================================================
 
 uploaded_file = st.file_uploader(
     "Upload Leaf Image",
@@ -225,7 +250,10 @@ if uploaded_file:
         use_container_width=True
     )
 
-    if st.button("🔍 Predict Disease", type="primary"):
+    if st.button(
+        "🔍 Predict Disease",
+        type="primary"
+    ):
 
         with st.spinner(
             "Analyzing image... The first prediction may take a little longer."
@@ -241,25 +269,31 @@ if uploaded_file:
                     prevention
                 ) = predict(image)
 
+                # Prediction result
                 st.success(
                     f"Prediction: {disease}"
                 )
 
+                # Confidence
                 st.metric(
                     "Confidence",
                     f"{confidence:.2f}%"
                 )
 
+                # Progress bar
                 st.progress(
                     min(confidence / 100, 1.0)
                 )
 
+                # Disease description
                 st.subheader("Description")
                 st.info(description)
 
+                # Treatment
                 st.subheader("Treatment")
                 st.warning(treatment)
 
+                # Prevention
                 st.subheader("Prevention")
                 st.success(prevention)
 
